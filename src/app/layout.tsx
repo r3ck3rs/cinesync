@@ -1,43 +1,9 @@
-import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import type { Metadata } from "next";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-
 export const metadata: Metadata = {
-  title: {
-    default: "CineSync",
-    template: "%s · CineSync",
-  },
-  description: "Plan films, sync met vrienden, nooit meer solo kijken.",
-  applicationName: "CineSync",
-  authors: [{ name: "CineSync Team" }],
-  keywords: ["films", "cinema", "sociale app", "watchlist", "vrienden"],
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "CineSync",
-  },
-  openGraph: {
-    type: "website",
-    siteName: "CineSync",
-    title: "CineSync",
-    description: "Plan films, sync met vrienden, nooit meer solo kijken.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "CineSync",
-    description: "Plan films, sync met vrienden, nooit meer solo kijken.",
-  },
-};
-
-export const viewport: Viewport = {
-  themeColor: "#db2777",
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  title: "CineSync",
+  description: "Go to the movies together — spontaneously.",
 };
 
 export default function RootLayout({
@@ -46,8 +12,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="nl" className={inter.variable}>
-      <body className="min-h-screen flex flex-col">{children}</body>
+    <html lang="nl">
+      <body>{children}</body>
     </html>
   );
 }
