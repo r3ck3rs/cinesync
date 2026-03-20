@@ -1,9 +1,9 @@
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-black text-white">
-      <h1 className="text-4xl font-bold mb-4">🎬 CineSync</h1>
-      <p className="text-xl text-gray-400">Go to the movies together — spontaneously.</p>
-      <p className="mt-8 text-sm text-gray-600">MVP in ontwikkeling...</p>
+    <main style={{display:"flex",minHeight:"100vh",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"#000",color:"#fff",fontFamily:"sans-serif"}}>
+      <h1 style={{fontSize:"2.5rem",fontWeight:"bold",marginBottom:"1rem"}}>🎬 CineSync</h1>
+      <p style={{fontSize:"1.2rem",color:"#888"}}>Go to the movies together — spontaneously.</p>
+      <p style={{marginTop:"2rem",fontSize:"0.9rem",color:"#444"}}>MVP in ontwikkeling...</p>
     </main>
   )
 }
