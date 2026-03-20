@@ -5,6 +5,8 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    // Force cheerio to use its CommonJS build in Jest
+    '^cheerio$': '<rootDir>/node_modules/cheerio/dist/commonjs/index.js',
   },
 }
 module.exports = createJestConfig(customJestConfig)
