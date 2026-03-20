@@ -95,8 +95,7 @@ export function parseScreenings(html: string): Screening[] {
       // Extract slug from the href: /film/movie-slug-2025/popup/rotterdam
       const movieHref =
         elem.find("a.movie-link.text-link").first().attr("href") ?? "";
-      const movieSlugMatch = movieHref.match(/\/film\/([^/]+)\//);
-      const movieSlug = movieSlugMatch ? movieSlugMatch[1] : movieTitle.toLowerCase().replace(/\s+/g, "-");
+      const movieSlugMatch = movieHref.match(/\/film\/([^\/]+)\//);      const movieSlug = movieSlugMatch ? movieSlugMatch[1] : movieTitle.toLowerCase().replace(/\s+/g, "-");
 
       if (!movieTitle) return;
 
