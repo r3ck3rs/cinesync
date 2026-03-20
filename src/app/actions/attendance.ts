@@ -31,6 +31,25 @@ export async function toggleAttendance(params: {
 
   const { movieSlug, movieTitle, moviePosterPath, cinema, cinemaSlug, showtime, ticketUrl, visibility = 'public' } = params
 
+  // Auto-create profile if missing
+  const { data: existingProfile } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('id', user.id)
+    .single()
+
+  if (!existingProfile) {
+    const meta = user.user_metadata || {}
+    const fullName = (meta.full_name || meta.name || user.email?.split('@')[0] || '').trim()
+    const parts = fullName.split(' ')
+    await supabase.from('profiles').upsert({
+      id: user.id,
+      first_name: parts[0] || '',
+      last_name: parts.slice(1).join(' ') || '',
+      avatar_url: meta.avatar_url || meta.picture || null,
+    })
+  }
+
   // Check if already attending
   const { data: existing } = await supabase
     .from('attendances')
@@ -69,9 +88,9 @@ export async function toggleAttendance(params: {
 
   const attendees: AttendeeInfo[] = (attendances ?? []).map((a: any) => ({
     userId: a.user_id,
-    firstName: a.profiles?.first_name,
-    lastName: a.profiles?.last_name,
-    avatarUrl: a.profiles?.avatar_url,
+    firstName: a.profiles?.first_name ?? undefined,
+    lastName: a.profiles?.last_name ?? undefined,
+    avatarUrl: a.profiles?.avatar_url ?? undefined,
   }))
 
   revalidatePath('/feed')

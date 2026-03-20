@@ -75,8 +75,13 @@ export default function AttendanceButton({
           showtime,
           ticketUrl,
         })
+        const enriched = result.attendees.map(a =>
+          a.userId === userId && !a.firstName
+            ? { ...a, firstName: currentUserFirstName, lastName: currentUserLastName, avatarUrl: currentUserAvatarUrl }
+            : a
+        )
         setIsGoing(result.attending)
-        setAttendees(result.attendees)
+        setAttendees(enriched)
       } catch {
         setIsGoing(initialIsGoing)
         setAttendees(initialAttendees)
