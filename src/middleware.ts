@@ -41,8 +41,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
 
-  if (isAuthPath && user) {
-    return NextResponse.redirect(new URL("/", request.url));
+  // Logged-in users on landing page or auth pages → go to /feed
+  if ((pathname === "/" || isAuthPath) && user) {
+    return NextResponse.redirect(new URL("/feed", request.url));
   }
 
   return supabaseResponse;

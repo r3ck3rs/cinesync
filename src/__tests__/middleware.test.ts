@@ -51,7 +51,7 @@ describe('Middleware', () => {
     })
     const res = await middleware(makeRequest('/auth/login'))
     expect(res.status).toBe(307)
-    expect(res.headers.get('location')).toBe('http://localhost:3000/')
+    expect(res.headers.get('location')).toBe('http://localhost:3000/feed')
   })
 
   it('redirects authenticated users away from /auth/register to /', async () => {
@@ -60,7 +60,7 @@ describe('Middleware', () => {
     })
     const res = await middleware(makeRequest('/auth/register'))
     expect(res.status).toBe(307)
-    expect(res.headers.get('location')).toBe('http://localhost:3000/')
+    expect(res.headers.get('location')).toBe('http://localhost:3000/feed')
   })
 
   it('allows authenticated users to access protected routes', async () => {

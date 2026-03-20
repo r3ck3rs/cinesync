@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { createClient } from '@/lib/supabase/server'
-import FeedPage from '@/app/(feed)/page'
+import FeedPage from '@/app/(feed)/feed/page'
 
 // next/navigation redirect throws to stop execution, just like the real Next.js
 jest.mock('next/navigation', () => ({
