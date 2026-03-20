@@ -46,8 +46,11 @@ export interface Database {
           movie_poster_path: string | null;
           scheduled_at: string | null;
           location: string | null;
+          cinema_id: string | null;
+          cinema_name: string | null;
           notes: string | null;
           is_public: boolean;
+          max_spots: number | null;
           status: "planning" | "confirmed" | "done" | "cancelled";
           created_at: string;
           updated_at: string;
@@ -61,8 +64,11 @@ export interface Database {
           movie_poster_path?: string | null;
           scheduled_at?: string | null;
           location?: string | null;
+          cinema_id?: string | null;
+          cinema_name?: string | null;
           notes?: string | null;
           is_public?: boolean;
+          max_spots?: number | null;
           status?: "planning" | "confirmed" | "done" | "cancelled";
           created_at?: string;
           updated_at?: string;
@@ -74,8 +80,11 @@ export interface Database {
           movie_poster_path?: string | null;
           scheduled_at?: string | null;
           location?: string | null;
+          cinema_id?: string | null;
+          cinema_name?: string | null;
           notes?: string | null;
           is_public?: boolean;
+          max_spots?: number | null;
           status?: "planning" | "confirmed" | "done" | "cancelled";
           updated_at?: string;
         };

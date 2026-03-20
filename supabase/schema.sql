@@ -68,12 +68,16 @@ create table public.plans (
   movie_poster_path  text,
   scheduled_at       timestamptz,
   location           text,
+  cinema_id          text,
+  cinema_name        text,
   notes              text,
   is_public          boolean not null default false,
+  max_spots          integer default 10,
   status             public.plan_status not null default 'planning',
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now(),
-  constraint title_length check (char_length(title) between 1 and 200)
+  constraint title_length check (char_length(title) between 1 and 200),
+  constraint max_spots_range check (max_spots is null or max_spots between 2 and 50)
 );
 
 create index plans_created_by_idx on public.plans (created_by);
