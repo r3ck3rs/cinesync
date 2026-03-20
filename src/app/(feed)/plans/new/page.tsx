@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { searchMovies, getPosterUrl, getReleaseYear, type TMDbMovie } from "@/lib/tmdb";
+import { createPlan } from "@/app/actions/plans";
 import Image from "next/image";
 
 export default function NewPlanPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
   const [movieQuery, setMovieQuery] = useState("");
   const [movieResults, setMovieResults] = useState<TMDbMovie[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<TMDbMovie | null>(null);
@@ -269,11 +272,36 @@ export default function NewPlanPage() {
               </div>
             </div>
 
+            {error && (
+              <p className="text-red-400 text-sm text-center">{error}</p>
+            )}
+
             <button
-              onClick={() => router.push("/feed")}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-medium transition-colors"
+              onClick={() => {
+                if (!selectedMovie) return;
+                setError(null);
+                startTransition(async () => {
+                  try {
+                    await createPlan({
+                      movieId: selectedMovie.id,
+                      movieTitle: selectedMovie.title,
+                      moviePosterPath: selectedMovie.poster_path,
+                      movieYear: getReleaseYear(selectedMovie.release_date),
+                      cinema: form.cinema,
+                      date: form.date,
+                      time: form.time,
+                      audience: form.audience,
+                      note: form.note,
+                    });
+                  } catch (e) {
+                    setError(e instanceof Error ? e.message : "Er ging iets mis");
+                  }
+                });
+              }}
+              disabled={isPending}
+              className="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white py-3 rounded-xl font-medium transition-colors"
             >
-              🎟️ Plan publiceren
+              {isPending ? "Publiceren..." : "🎟️ Plan publiceren"}
             </button>
           </div>
         )}

@@ -16,12 +16,35 @@ jest.mock('@/lib/supabase/server', () => ({
 
 const mockCreateClient = createClient as jest.MockedFunction<typeof createClient>
 
+jest.mock('next/link', () => ({
+  __esModule: true,
+  default: ({ href, children }: { href: string; children: React.ReactNode }) => (
+    <a href={href}>{children}</a>
+  ),
+}))
+
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
+}))
+
+jest.mock('@/lib/tmdb', () => ({
+  getPosterUrl: jest.fn((path: string) => `https://image.tmdb.org/t/p/w185${path}`),
+}))
+
 function setupUser(email: string | null) {
   const getUser = jest.fn().mockResolvedValue({
     data: { user: email ? { id: 'uid', email } : null },
   })
+  const chainable = {
+    select: jest.fn().mockReturnThis(),
+    eq: jest.fn().mockReturnThis(),
+    gte: jest.fn().mockReturnThis(),
+    order: jest.fn().mockReturnThis(),
+    limit: jest.fn().mockResolvedValue({ data: [], error: null }),
+  }
   // @ts-expect-error partial mock
-  mockCreateClient.mockResolvedValue({ auth: { getUser } })
+  mockCreateClient.mockResolvedValue({ auth: { getUser }, from: jest.fn(() => chainable) })
 }
 
 describe('Feed page', () => {
