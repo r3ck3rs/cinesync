@@ -31,6 +31,9 @@ export async function toggleAttendance(params: {
 
   const { movieSlug, movieTitle, moviePosterPath, cinema, cinemaSlug, showtime, ticketUrl, visibility = 'public' } = params
 
+  // Normalize showtime to UTC ISO string to avoid timezone offset mismatches
+  const normalizedShowtime = new Date(showtime).toISOString()
+
   // Auto-create profile if missing
   const { data: existingProfile } = await supabase
     .from('profiles')
@@ -57,7 +60,7 @@ export async function toggleAttendance(params: {
     .eq('user_id', user.id)
     .eq('movie_slug', movieSlug)
     .eq('cinema_slug', cinemaSlug)
-    .eq('showtime', showtime)
+    .eq('showtime', normalizedShowtime)
     .single()
 
   if (existing) {
@@ -72,26 +75,36 @@ export async function toggleAttendance(params: {
       movie_poster_path: moviePosterPath,
       cinema,
       cinema_slug: cinemaSlug,
-      showtime,
+      showtime: normalizedShowtime,
       ticket_url: ticketUrl,
       visibility,
     })
   }
 
-  // Fetch updated attendee list for this screening
-  const { data: attendances } = await supabase
+  // Fetch updated attendee list — two queries to avoid RLS issues with JOIN
+  const { data: attendanceRows } = await supabase
     .from('attendances')
-    .select('user_id, profiles(first_name, last_name, avatar_url)')
+    .select('user_id')
     .eq('movie_slug', movieSlug)
     .eq('cinema_slug', cinemaSlug)
-    .eq('showtime', showtime)
+    .eq('showtime', normalizedShowtime)
 
-  const attendees: AttendeeInfo[] = (attendances ?? []).map((a: any) => ({
-    userId: a.user_id,
-    firstName: a.profiles?.first_name ?? undefined,
-    lastName: a.profiles?.last_name ?? undefined,
-    avatarUrl: a.profiles?.avatar_url ?? undefined,
-  }))
+  const userIds = (attendanceRows ?? []).map((a: { user_id: string }) => a.user_id)
+  const { data: profiles } = userIds.length > 0
+    ? await supabase.from('profiles').select('id, first_name, last_name, avatar_url').in('id', userIds)
+    : { data: [] }
+
+  const profileMap = new Map((profiles ?? []).map((p: { id: string; first_name?: string; last_name?: string; avatar_url?: string }) => [p.id, p]))
+
+  const attendees: AttendeeInfo[] = userIds.map((uid: string) => {
+    const p = profileMap.get(uid)
+    return {
+      userId: uid,
+      firstName: p?.first_name ?? undefined,
+      lastName: p?.last_name ?? undefined,
+      avatarUrl: p?.avatar_url ?? undefined,
+    }
+  })
 
   revalidatePath('/feed')
 

@@ -18,7 +18,6 @@ type AttendanceRow = {
   movie_slug: string;
   cinema_slug: string;
   showtime: string;
-  profiles: { first_name?: string; last_name?: string; avatar_url?: string } | null;
 };
 
 export default async function FeedPage({
@@ -86,21 +85,31 @@ export default async function FeedPage({
       })
     );
 
-    // 3. Fetch attendances
+    // 3. Fetch attendances — two queries to avoid RLS issues with JOIN
     if (user) {
-      const { data } = await supabase
+      const { data: attendanceRows } = await supabase
         .from("attendances")
-        .select("user_id, movie_slug, cinema_slug, showtime, profiles(first_name, last_name, avatar_url)")
+        .select("user_id, movie_slug, cinema_slug, showtime")
         .eq("visibility", "public");
 
-      for (const row of (data ?? []) as AttendanceRow[]) {
+      const rows = (attendanceRows ?? []) as AttendanceRow[];
+      const uniqueUserIds = [...new Set(rows.map((r) => r.user_id))];
+      const { data: profileRows } = uniqueUserIds.length > 0
+        ? await supabase.from("profiles").select("id, first_name, last_name, avatar_url").in("id", uniqueUserIds)
+        : { data: [] };
+
+      const profileMap = new Map((profileRows ?? []).map((p: { id: string; first_name?: string; last_name?: string; avatar_url?: string }) => [p.id, p]));
+
+      for (const row of rows) {
+        const p = profileMap.get(row.user_id);
+        // Supabase returns showtime normalized to UTC — use as-is for key
         const key = `${row.movie_slug}|${row.cinema_slug}|${row.showtime}`;
         if (!attendeesMap.has(key)) attendeesMap.set(key, []);
         attendeesMap.get(key)!.push({
           userId: row.user_id,
-          firstName: row.profiles?.first_name,
-          lastName: row.profiles?.last_name,
-          avatarUrl: row.profiles?.avatar_url,
+          firstName: p?.first_name,
+          lastName: p?.last_name,
+          avatarUrl: p?.avatar_url,
         });
       }
     }
@@ -186,7 +195,8 @@ export default async function FeedPage({
         ) : (
           screenings.map((screening) => {
             const tmdb = tmdbMap.get(screening.movieSlug);
-            const key = `${screening.movieSlug}|${screening.cinemaSlug}|${screening.datetime}`;
+            const normalizedDatetime = new Date(screening.datetime).toISOString();
+            const key = `${screening.movieSlug}|${screening.cinemaSlug}|${normalizedDatetime}`;
             const attendees = attendeesMap.get(key) ?? [];
             const isGoing = user ? attendees.some((a) => a.userId === user!.id) : false;
 
