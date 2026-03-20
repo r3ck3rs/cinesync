@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useTransition } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { toggleAttendance, AttendeeInfo } from '@/app/actions/attendance'
-import AvatarStack from './AvatarStack'
+import { AttendeeInfo } from '@/app/actions/attendance'
+import AttendanceButton from './AttendanceButton'
 import { getPosterUrl } from '@/lib/tmdb'
 
 interface ScreeningCardProps {
@@ -43,61 +42,9 @@ export default function ScreeningCard({
   currentUserLastName,
   currentUserAvatarUrl,
 }: ScreeningCardProps) {
-  const [isGoing, setIsGoing] = useState(initialIsGoing)
-  const [attendees, setAttendees] = useState(initialAttendees)
-  const [isPending, startTransition] = useTransition()
-  const [justToggled, setJustToggled] = useState(false)
-
-  const handleToggle = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    if (!userId) {
-      window.location.href = '/auth/login'
-      return
-    }
-
-    setJustToggled(true)
-    setTimeout(() => setJustToggled(false), 300)
-
-    if (isGoing) {
-      setIsGoing(false)
-      setAttendees(attendees.filter((a) => a.userId !== userId))
-    } else {
-      setIsGoing(true)
-      setAttendees([...attendees, {
-        userId,
-        firstName: currentUserFirstName,
-        lastName: currentUserLastName,
-        avatarUrl: currentUserAvatarUrl,
-      }])
-    }
-
-    startTransition(async () => {
-      try {
-        const result = await toggleAttendance({
-          movieSlug,
-          movieTitle,
-          moviePosterPath: posterPath ?? undefined,
-          cinema,
-          cinemaSlug,
-          showtime,
-          ticketUrl,
-        })
-        setIsGoing(result.attending)
-        setAttendees(result.attendees)
-      } catch {
-        setIsGoing(initialIsGoing)
-        setAttendees(initialAttendees)
-      }
-    })
-  }
-
-  const slug = `${movieSlug}`
-
   return (
     <Link
-      href={`/film/${slug}`}
+      href={`/film/${movieSlug}`}
       className="block group"
       style={{ textDecoration: 'none' }}
     >
@@ -156,7 +103,7 @@ export default function ScreeningCard({
             {movieTitle}
           </h3>
 
-          {/* Cinema + Time */}
+          {/* Info chip: time · cinema */}
           <div className="flex items-center gap-1.5 mb-2">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
               <circle cx="12" cy="12" r="10"/>
@@ -179,56 +126,23 @@ export default function ScreeningCard({
             </p>
           )}
 
-          {/* Footer: avatars + join button */}
-          <div className="mt-auto flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              {attendees.length > 0 ? (
-                <>
-                  <AvatarStack attendees={attendees} max={4} />
-                  <span className="text-[10px]" style={{ color: 'var(--muted)' }}>
-                    {attendees.length === 1 ? '1 gaat' : `${attendees.length} gaan`}
-                  </span>
-                </>
-              ) : (
-                <span className="text-[10px]" style={{ color: 'var(--subtle)' }}>
-                  Wees de eerste
-                </span>
-              )}
-            </div>
-
-            {/* Join button */}
-            <button
-              onClick={handleToggle}
-              disabled={isPending}
-              className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-base transition-all duration-200 ${
-                isPending ? 'opacity-50' : 'hover:scale-110 active:scale-95'
-              } ${justToggled ? 'animate-pop' : ''}`}
-              style={
-                isGoing
-                  ? {
-                      background: 'linear-gradient(135deg, #7c6ff7 0%, #ec4899 100%)',
-                      boxShadow: '0 4px 16px rgba(124,111,247,0.4)',
-                      color: '#fff',
-                    }
-                  : {
-                      background: 'var(--elevated)',
-                      border: '1.5px solid rgba(124,111,247,0.3)',
-                      color: '#9b8ef7',
-                    }
-              }
-              aria-label={isGoing ? 'Niet meer meedoen' : 'Meedoen'}
-            >
-              {isGoing ? (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              ) : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"/>
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-              )}
-            </button>
+          {/* Footer: attendance area */}
+          <div className="mt-auto flex items-center justify-end">
+            <AttendanceButton
+              movieSlug={movieSlug}
+              movieTitle={movieTitle}
+              cinema={cinema}
+              cinemaSlug={cinemaSlug}
+              showtime={showtime}
+              ticketUrl={ticketUrl}
+              moviePosterPath={posterPath ?? undefined}
+              initialIsGoing={initialIsGoing}
+              initialAttendees={initialAttendees}
+              userId={userId}
+              currentUserFirstName={currentUserFirstName}
+              currentUserLastName={currentUserLastName}
+              currentUserAvatarUrl={currentUserAvatarUrl}
+            />
           </div>
         </div>
       </article>

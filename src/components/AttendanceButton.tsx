@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { toggleAttendance, AttendeeInfo } from '@/app/actions/attendance'
-import AvatarStack from './AvatarStack'
+import Avatar from './Avatar'
 
 interface AttendanceButtonProps {
   movieSlug: string
@@ -19,9 +19,6 @@ interface AttendanceButtonProps {
   currentUserLastName?: string
   currentUserAvatarUrl?: string
 }
-
-const formatTime = (iso: string) =>
-  new Date(iso).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
 
 export default function AttendanceButton({
   movieSlug,
@@ -42,24 +39,29 @@ export default function AttendanceButton({
   const [attendees, setAttendees] = useState(initialAttendees)
   const [isPending, startTransition] = useTransition()
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
     if (!userId) {
       window.location.href = '/auth/login'
       return
     }
 
-    // Optimistic update
     if (isGoing) {
       setIsGoing(false)
       setAttendees(attendees.filter((a) => a.userId !== userId))
     } else {
       setIsGoing(true)
-      setAttendees([...attendees, {
-        userId,
-        firstName: currentUserFirstName,
-        lastName: currentUserLastName,
-        avatarUrl: currentUserAvatarUrl,
-      }])
+      setAttendees([
+        ...attendees,
+        {
+          userId,
+          firstName: currentUserFirstName,
+          lastName: currentUserLastName,
+          avatarUrl: currentUserAvatarUrl,
+        },
+      ])
     }
 
     startTransition(async () => {
@@ -76,7 +78,6 @@ export default function AttendanceButton({
         setIsGoing(result.attending)
         setAttendees(result.attendees)
       } catch {
-        // Revert on error
         setIsGoing(initialIsGoing)
         setAttendees(initialAttendees)
       }
@@ -84,48 +85,33 @@ export default function AttendanceButton({
   }
 
   return (
-    <button
-      onClick={handleClick}
-      disabled={isPending}
-      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all duration-150 hover:scale-[1.02] active:scale-[0.98] ${
-        isPending ? 'opacity-50' : ''
-      }`}
-      style={
-        isGoing
-          ? {
-              background: 'linear-gradient(135deg, rgba(124,111,247,0.2), rgba(236,72,153,0.2))',
-              border: '1px solid rgba(124,111,247,0.4)',
-              color: '#9b8ef7',
-            }
-          : {
-              background: 'var(--elevated)',
-              border: '1px solid var(--border)',
-              color: 'var(--muted)',
-            }
-      }
-    >
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <polyline points="12 6 12 12 16 14"/>
-      </svg>
-      <span>{formatTime(showtime)}</span>
-      <span style={{ opacity: 0.5 }}>·</span>
-      <span className="truncate max-w-[80px]">{cinema}</span>
-      {attendees.length > 0 && (
-        <>
-          <span style={{ opacity: 0.3 }}>|</span>
-          <AvatarStack attendees={attendees} max={3} />
-        </>
-      )}
-      <span className="ml-0.5">
-        {isGoing ? (
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-        ) : (
-          '+'
-        )}
-      </span>
-    </button>
+    <div className={`flex items-center${isPending ? ' opacity-60' : ''}`}>
+      {attendees.map((a, i) => (
+        <div
+          key={a.userId}
+          style={{ marginLeft: i === 0 ? 0 : '-8px', zIndex: attendees.length - i }}
+        >
+          <Avatar
+            userId={a.userId}
+            firstName={a.firstName}
+            lastName={a.lastName}
+            avatarUrl={a.avatarUrl}
+            size="sm"
+          />
+        </div>
+      ))}
+      <button
+        onClick={handleClick}
+        disabled={isPending}
+        style={{ marginLeft: attendees.length > 0 ? '-8px' : 0, zIndex: 0 }}
+        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ring-2 ring-[var(--surface)] transition-all ${
+          isGoing
+            ? 'bg-purple-600 text-white'
+            : 'bg-gray-700 text-gray-300 hover:bg-purple-600 hover:text-white'
+        }`}
+      >
+        {isGoing ? '✓' : '+'}
+      </button>
+    </div>
   )
 }
