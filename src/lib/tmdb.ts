@@ -45,7 +45,7 @@ export async function searchMovies(query: string): Promise<TMDbMovie[]> {
     `${TMDB_BASE}/search/movie?query=${encodeURIComponent(query)}&language=nl-NL&include_adult=false`,
     {
       headers: {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
+        Authorization: `Bearer ${process.env.TMDB_API_KEY ?? process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
         "Content-Type": "application/json",
       },
       next: { revalidate: 0 },
@@ -62,7 +62,7 @@ export async function getMovieDetails(movieId: number): Promise<TMDbMovieDetails
       `${TMDB_BASE}/movie/${movieId}?language=nl-NL&append_to_response=credits`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
+          Authorization: `Bearer ${process.env.TMDB_API_KEY ?? process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
           "Content-Type": "application/json",
         },
       }
