@@ -15,6 +15,9 @@ interface AttendanceButtonProps {
   initialIsGoing: boolean
   initialAttendees: AttendeeInfo[]
   userId?: string
+  currentUserFirstName?: string
+  currentUserLastName?: string
+  currentUserAvatarUrl?: string
 }
 
 const formatTime = (iso: string) =>
@@ -31,6 +34,9 @@ export default function AttendanceButton({
   initialIsGoing,
   initialAttendees,
   userId,
+  currentUserFirstName,
+  currentUserLastName,
+  currentUserAvatarUrl,
 }: AttendanceButtonProps) {
   const [isGoing, setIsGoing] = useState(initialIsGoing)
   const [attendees, setAttendees] = useState(initialAttendees)
@@ -48,7 +54,12 @@ export default function AttendanceButton({
       setAttendees(attendees.filter((a) => a.userId !== userId))
     } else {
       setIsGoing(true)
-      setAttendees([...attendees, { userId }])
+      setAttendees([...attendees, {
+        userId,
+        firstName: currentUserFirstName,
+        lastName: currentUserLastName,
+        avatarUrl: currentUserAvatarUrl,
+      }])
     }
 
     startTransition(async () => {

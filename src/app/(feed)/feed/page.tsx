@@ -28,7 +28,8 @@ export default async function FeedPage({
 }) {
   const selectedDay = searchParams.day ?? todayStr();
 
-  let user: { id: string } | null = null;
+  let user: { id: string; user_metadata?: Record<string, string> } | null = null;
+  let userProfile: { firstName?: string; lastName?: string; avatarUrl?: string } = {};
   let screenings: FlatScreening[] = [];
   const tmdbMap = new Map<string, { posterPath: string | null; overview: string }>();
   const attendeesMap = new Map<string, AttendeeInfo[]>();
@@ -37,6 +38,29 @@ export default async function FeedPage({
     const supabase = await createClient();
     const { data: { user: authUser } } = await supabase.auth.getUser();
     user = authUser;
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('first_name, last_name, avatar_url')
+        .eq('id', user.id)
+        .single();
+
+      if (profile) {
+        userProfile = {
+          firstName: profile.first_name,
+          lastName: profile.last_name,
+          avatarUrl: profile.avatar_url,
+        };
+      } else {
+        // Auto-create profile from auth metadata on first login
+        const nameParts = (user.user_metadata?.full_name || user.user_metadata?.name || (user as { email?: string }).email?.split('@')[0] || '').split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+        await supabase.from('profiles').upsert({ id: user.id, first_name: firstName, last_name: lastName });
+        userProfile = { firstName, lastName };
+      }
+    }
 
     // 1. Fetch & flatten all screenings, filter by selected day
     const raw = await getRotterdamScreenings();
@@ -180,6 +204,9 @@ export default async function FeedPage({
                 initialIsGoing={isGoing}
                 initialAttendees={attendees}
                 userId={user?.id}
+                currentUserFirstName={userProfile.firstName}
+                currentUserLastName={userProfile.lastName}
+                currentUserAvatarUrl={userProfile.avatarUrl}
               />
             );
           })

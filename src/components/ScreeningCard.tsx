@@ -19,6 +19,9 @@ interface ScreeningCardProps {
   initialIsGoing: boolean
   initialAttendees: AttendeeInfo[]
   userId?: string
+  currentUserFirstName?: string
+  currentUserLastName?: string
+  currentUserAvatarUrl?: string
 }
 
 const formatTime = (iso: string) =>
@@ -36,6 +39,9 @@ export default function ScreeningCard({
   initialIsGoing,
   initialAttendees,
   userId,
+  currentUserFirstName,
+  currentUserLastName,
+  currentUserAvatarUrl,
 }: ScreeningCardProps) {
   const [isGoing, setIsGoing] = useState(initialIsGoing)
   const [attendees, setAttendees] = useState(initialAttendees)
@@ -59,7 +65,12 @@ export default function ScreeningCard({
       setAttendees(attendees.filter((a) => a.userId !== userId))
     } else {
       setIsGoing(true)
-      setAttendees([...attendees, { userId }])
+      setAttendees([...attendees, {
+        userId,
+        firstName: currentUserFirstName,
+        lastName: currentUserLastName,
+        avatarUrl: currentUserAvatarUrl,
+      }])
     }
 
     startTransition(async () => {
