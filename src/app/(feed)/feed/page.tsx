@@ -9,43 +9,6 @@ import { AttendeeInfo } from "@/app/actions/attendance";
 import AttendanceButton from "@/components/AttendanceButton";
 
 export default async function FeedPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // 1. Fetch screenings from scraper
-  const raw = await getRotterdamScreenings();
-  const flat = flattenScreenings(raw);
-
-  // 2. Group by movieSlug
-  const movieMap = new Map<
-    string,
-    { title: string; slug: string; showtimes: FlatScreening[] }
-  >();
-  for (const s of flat) {
-    if (!movieMap.has(s.movieSlug)) {
-      movieMap.set(s.movieSlug, {
-        title: s.movieTitle,
-        slug: s.movieSlug,
-        showtimes: [],
-      });
-    }
-    movieMap.get(s.movieSlug)!.showtimes.push(s);
-  }
-
-  const movies = Array.from(movieMap.values());
-
-  // 3. Fetch TMDB posters in parallel
-  const posterMap = new Map<string, string | null>();
-  await Promise.all(
-    movies.map(async (movie) => {
-      const results = await searchMovies(movie.title);
-      posterMap.set(movie.slug, results[0]?.poster_path ?? null);
-    })
-  );
-
-  // 4. If logged in: fetch all public attendances with profiles
   type AttendanceRow = {
     user_id: string;
     movie_slug: string;
@@ -54,26 +17,71 @@ export default async function FeedPage() {
     profiles: { first_name?: string; last_name?: string; avatar_url?: string } | null;
   };
 
-  let attendanceRows: AttendanceRow[] = [];
-  if (user) {
-    const { data } = await supabase
-      .from("attendances")
-      .select("user_id, movie_slug, cinema_slug, showtime, profiles(first_name, last_name, avatar_url)")
-      .eq("visibility", "public");
-    attendanceRows = (data ?? []) as AttendanceRow[];
-  }
-
-  // Build a lookup: `${movieSlug}|${cinemaSlug}|${showtime}` -> AttendeeInfo[]
+  let user: { id: string } | null = null;
+  let movies: { title: string; slug: string; showtimes: FlatScreening[] }[] = [];
+  const posterMap = new Map<string, string | null>();
   const attendeesMap = new Map<string, AttendeeInfo[]>();
-  for (const row of attendanceRows) {
-    const key = `${row.movie_slug}|${row.cinema_slug}|${row.showtime}`;
-    if (!attendeesMap.has(key)) attendeesMap.set(key, []);
-    attendeesMap.get(key)!.push({
-      userId: row.user_id,
-      firstName: row.profiles?.first_name,
-      lastName: row.profiles?.last_name,
-      avatarUrl: row.profiles?.avatar_url,
-    });
+
+  try {
+    const supabase = await createClient();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    user = authUser;
+
+    // 1. Fetch screenings from scraper
+    const raw = await getRotterdamScreenings();
+    const flat = flattenScreenings(raw);
+
+    // 2. Group by movieSlug
+    const movieMap = new Map<
+      string,
+      { title: string; slug: string; showtimes: FlatScreening[] }
+    >();
+    for (const s of flat) {
+      if (!movieMap.has(s.movieSlug)) {
+        movieMap.set(s.movieSlug, {
+          title: s.movieTitle,
+          slug: s.movieSlug,
+          showtimes: [],
+        });
+      }
+      movieMap.get(s.movieSlug)!.showtimes.push(s);
+    }
+
+    movies = Array.from(movieMap.values());
+
+    // 3. Fetch TMDB posters in parallel
+    await Promise.all(
+      movies.map(async (movie) => {
+        try {
+          const results = await searchMovies(movie.title);
+          posterMap.set(movie.slug, results[0]?.poster_path ?? null);
+        } catch {
+          posterMap.set(movie.slug, null);
+        }
+      })
+    );
+
+    // 4. If logged in: fetch all public attendances with profiles
+    if (user) {
+      const { data } = await supabase
+        .from("attendances")
+        .select("user_id, movie_slug, cinema_slug, showtime, profiles(first_name, last_name, avatar_url)")
+        .eq("visibility", "public");
+      const attendanceRows = (data ?? []) as AttendanceRow[];
+
+      for (const row of attendanceRows) {
+        const key = `${row.movie_slug}|${row.cinema_slug}|${row.showtime}`;
+        if (!attendeesMap.has(key)) attendeesMap.set(key, []);
+        attendeesMap.get(key)!.push({
+          userId: row.user_id,
+          firstName: row.profiles?.first_name,
+          lastName: row.profiles?.last_name,
+          avatarUrl: row.profiles?.avatar_url,
+        });
+      }
+    }
+  } catch {
+    // During build or when env vars are unavailable, return empty state
   }
 
   return (
