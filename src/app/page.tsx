@@ -12,12 +12,14 @@ export default async function HomePage() {
     return <LandingPage />;
   }
 
-  const { data: plans } = await supabase
+  const { data: plansData } = await supabase
     .from("plans")
-    .select("*, plan_members(count), profiles(username, avatar_url)")
+    .select("id, title, scheduled_at, location, plan_members(count)")
     .eq("created_by", user.id)
     .order("scheduled_at", { ascending: true })
     .limit(10);
+
+  const plans = plansData as PlanWithMembers[] | null;
 
   return (
     <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
@@ -44,9 +46,17 @@ export default async function HomePage() {
   );
 }
 
-function PlanCard({ plan }: { plan: Record<string, unknown> }) {
+interface PlanWithMembers {
+  id: string;
+  title: string;
+  scheduled_at: string | null;
+  location: string | null;
+  plan_members: { count: number }[];
+}
+
+function PlanCard({ plan }: { plan: PlanWithMembers }) {
   const scheduledAt = plan.scheduled_at
-    ? new Date(plan.scheduled_at as string)
+    ? new Date(plan.scheduled_at)
     : null;
 
   return (
@@ -58,7 +68,7 @@ function PlanCard({ plan }: { plan: Record<string, unknown> }) {
           </div>
           <div className="flex-1 min-w-0">
             <h2 className="font-semibold text-white truncate">
-              {plan.title as string}
+              {plan.title}
             </h2>
             {scheduledAt && (
               <p className="text-sm text-gray-400 mt-0.5">
@@ -76,11 +86,10 @@ function PlanCard({ plan }: { plan: Record<string, unknown> }) {
         <div className="flex items-center gap-4 text-xs text-gray-500">
           <span className="flex items-center gap-1">
             <Users className="w-3.5 h-3.5" />
-            {(plan.plan_members as { count: number }[])?.[0]?.count ?? 1}{" "}
-            deelnemers
+            {plan.plan_members?.[0]?.count ?? 1} deelnemers
           </span>
           {plan.location && (
-            <span className="truncate">{plan.location as string}</span>
+            <span className="truncate">{plan.location}</span>
           )}
         </div>
       </article>
