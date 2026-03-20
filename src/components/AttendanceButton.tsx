@@ -75,13 +75,32 @@ export default function AttendanceButton({
           showtime,
           ticketUrl,
         })
+        console.log('Server returned - attending:', result.attending, 'attendees:', result.attendees)
+
         const enriched = result.attendees.map(a =>
           a.userId === userId && !a.firstName
             ? { ...a, firstName: currentUserFirstName, lastName: currentUserLastName, avatarUrl: currentUserAvatarUrl }
             : a
         )
+        console.log('Enriched attendees:', enriched)
+
+        // Guard: if server says attending but user is missing from list
+        // (Supabase profiles join can fail silently under RLS), keep the avatar.
+        const finalAttendees =
+          result.attending && !enriched.some((a) => a.userId === userId)
+            ? [
+                ...enriched,
+                {
+                  userId: userId!,
+                  firstName: currentUserFirstName,
+                  lastName: currentUserLastName,
+                  avatarUrl: currentUserAvatarUrl,
+                },
+              ]
+            : enriched
+
         setIsGoing(result.attending)
-        setAttendees(enriched)
+        setAttendees(finalAttendees)
       } catch {
         setIsGoing(initialIsGoing)
         setAttendees(initialAttendees)
