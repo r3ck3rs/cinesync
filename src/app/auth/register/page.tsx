@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function RegisterPage() {
@@ -32,55 +33,185 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <main style={{ display: "flex", minHeight: "100vh", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#000", color: "#fff", fontFamily: "sans-serif" }}>
-        <h2 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>Check je e-mail</h2>
-        <p style={{ color: "#888", textAlign: "center", maxWidth: "360px", padding: "0 1rem" }}>
-          We hebben een bevestigingslink gestuurd naar <strong style={{ color: "#fff" }}>{email}</strong>.
-        </p>
-        <a href="/auth/login" style={{ marginTop: "2rem", color: "#e11d48" }}>Terug naar inloggen</a>
+      <main
+        className="min-h-screen flex flex-col items-center justify-center px-5"
+        style={{ background: "var(--bg)" }}
+      >
+        <div
+          className="w-full max-w-[380px] rounded-3xl p-8 text-center"
+          style={{
+            background: "var(--surface)",
+            border: "1px solid var(--border-md)",
+            boxShadow: "0 32px 64px rgba(0,0,0,0.4)",
+          }}
+        >
+          <div
+            className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-6"
+            style={{ background: "rgba(124,111,247,0.12)" }}
+          >
+            ✉️
+          </div>
+          <h2
+            className="font-display text-2xl font-bold mb-3"
+            style={{ color: "var(--text)" }}
+          >
+            Check je e-mail
+          </h2>
+          <p className="text-sm leading-relaxed mb-6" style={{ color: "var(--muted)" }}>
+            We hebben een bevestigingslink gestuurd naar{" "}
+            <strong style={{ color: "var(--text)" }}>{email}</strong>.
+          </p>
+          <Link
+            href="/auth/login"
+            className="text-sm font-semibold transition-colors"
+            style={{ color: "#9b8ef7" }}
+          >
+            Terug naar inloggen
+          </Link>
+        </div>
       </main>
     );
   }
 
   return (
-    <main style={{ display: "flex", minHeight: "100vh", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#000", color: "#fff", fontFamily: "sans-serif" }}>
-      <h1 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "0.5rem" }}>🎬 CineSync</h1>
-      <p style={{ color: "#888", marginBottom: "2rem" }}>Account aanmaken</p>
+    <main
+      className="min-h-screen flex flex-col items-center justify-center px-5"
+      style={{ background: "var(--bg)" }}
+    >
+      {/* Ambient glow */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "fixed",
+          top: "-10%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "500px",
+          height: "400px",
+          borderRadius: "50%",
+          background: "radial-gradient(ellipse, rgba(236,72,153,0.08) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }}
+      />
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", maxWidth: "360px", padding: "0 1rem" }}>
-        <input
-          type="email"
-          placeholder="E-mailadres"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid #333", background: "#111", color: "#fff", fontSize: "1rem" }}
-        />
-        <input
-          type="password"
-          placeholder="Wachtwoord (min. 6 tekens)"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength={6}
-          style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid #333", background: "#111", color: "#fff", fontSize: "1rem" }}
-        />
+      <div
+        className="w-full max-w-[380px] rounded-3xl p-8"
+        style={{
+          background: "var(--surface)",
+          border: "1px solid var(--border-md)",
+          boxShadow: "0 32px 64px rgba(0,0,0,0.4)",
+        }}
+      >
+        {/* Brand */}
+        <div className="text-center mb-8">
+          <div className="mb-4">
+            <span
+              className="font-display text-3xl font-black tracking-tight"
+              style={{
+                background: "linear-gradient(135deg, #f0f0f8 0%, #9b8ef7 50%, #ec4899 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              CineSync
+            </span>
+          </div>
+          <p className="text-sm" style={{ color: "var(--muted)" }}>
+            Account aanmaken
+          </p>
+        </div>
 
-        {error && <p style={{ color: "#f87171", fontSize: "0.9rem" }}>{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div>
+            <input
+              type="email"
+              placeholder="E-mailadres"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-4 py-3.5 rounded-xl text-sm outline-none transition-all duration-150"
+              style={{
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
+                color: "var(--text)",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "rgba(124,111,247,0.5)";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,111,247,0.1)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "var(--border)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            />
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ padding: "0.75rem", borderRadius: "8px", background: "#e11d48", color: "#fff", fontWeight: "bold", fontSize: "1rem", border: "none", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1 }}
+          <div>
+            <input
+              type="password"
+              placeholder="Wachtwoord (min. 6 tekens)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              className="w-full px-4 py-3.5 rounded-xl text-sm outline-none transition-all duration-150"
+              style={{
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
+                color: "var(--text)",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "rgba(124,111,247,0.5)";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,111,247,0.1)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "var(--border)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            />
+          </div>
+
+          {error && (
+            <p
+              className="text-xs px-3 py-2 rounded-lg"
+              style={{ color: "#f87171", background: "rgba(248,113,113,0.1)" }}
+            >
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3.5 rounded-xl font-semibold text-sm text-white transition-all duration-150 hover:scale-[1.01] active:scale-[0.99]"
+            style={{
+              background: loading
+                ? "var(--overlay)"
+                : "linear-gradient(135deg, #7c6ff7 0%, #ec4899 100%)",
+              boxShadow: loading ? "none" : "0 4px 20px rgba(124,111,247,0.3)",
+              cursor: loading ? "not-allowed" : "pointer",
+              opacity: loading ? 0.7 : 1,
+            }}
+          >
+            {loading ? "Bezig..." : "Registreer"}
+          </button>
+        </form>
+
+        <p
+          className="text-center text-xs mt-6"
+          style={{ color: "var(--muted)" }}
         >
-          {loading ? "Bezig..." : "Registreer"}
-        </button>
-
-        <p style={{ textAlign: "center", color: "#888", fontSize: "0.9rem" }}>
           Al een account?{" "}
-          <a href="/auth/login" style={{ color: "#e11d48" }}>Inloggen</a>
+          <Link
+            href="/auth/login"
+            className="font-semibold transition-colors"
+            style={{ color: "#9b8ef7" }}
+          >
+            Inloggen
+          </Link>
         </p>
-      </form>
+      </div>
     </main>
   );
 }

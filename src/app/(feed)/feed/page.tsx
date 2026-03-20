@@ -7,6 +7,7 @@ import { searchMovies } from "@/lib/tmdb";
 import { AttendeeInfo } from "@/app/actions/attendance";
 import ScreeningCard from "@/components/ScreeningCard";
 import DayNav from "@/components/DayNav";
+import BottomNav from "@/components/BottomNav";
 
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
@@ -84,24 +85,79 @@ export default async function FeedPage({
   }
 
   return (
-    <main className="min-h-screen bg-black text-white pb-24">
-      {/* Header + Day nav */}
-      <div className="sticky top-0 bg-black/90 backdrop-blur z-10">
-        <div className="max-w-2xl mx-auto px-6 py-4 border-b border-gray-900">
-          <h1 className="text-xl font-bold">🎬 CineSync</h1>
+    <main
+      className="min-h-screen pb-28"
+      style={{ background: "var(--bg)", color: "var(--text)" }}
+    >
+      {/* Sticky header */}
+      <header
+        className="sticky top-0 z-10"
+        style={{
+          background: "rgba(8,8,17,0.88)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          borderBottom: "1px solid var(--border)",
+        }}
+      >
+        <div className="max-w-md mx-auto px-4 pt-4 pb-0">
+          <div className="flex items-center justify-between mb-1">
+            <span
+              className="font-display font-black text-2xl tracking-tight"
+              style={{
+                background: "linear-gradient(135deg, #f0f0f8 0%, #9b8ef7 60%, #ec4899 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              🎬 CineSync
+            </span>
+            <Link
+              href="/profile"
+              className="w-9 h-9 rounded-full flex items-center justify-center transition-colors hover:opacity-80"
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--border-md)",
+              }}
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+              </svg>
+            </Link>
+          </div>
         </div>
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-md mx-auto">
           <DayNav currentDay={selectedDay} />
         </div>
-      </div>
+      </header>
 
       {/* Feed */}
-      <div className="max-w-2xl mx-auto px-4 pt-4 space-y-4">
+      <div className="max-w-md mx-auto px-4 pt-4 space-y-3">
         {screenings.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-5xl mb-4">🎬</p>
-            <h2 className="text-xl font-semibold mb-2">Geen voorstellingen gevonden</h2>
-            <p className="text-gray-400">Probeer een andere dag.</p>
+          <div
+            className="text-center py-24 px-6"
+          >
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
+              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+            >
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+                <line x1="7" y1="2" x2="7" y2="22"/>
+                <line x1="17" y1="2" x2="17" y2="22"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+              </svg>
+            </div>
+            <h2
+              className="font-display font-bold text-xl mb-2"
+              style={{ color: "var(--text)" }}
+            >
+              Geen voorstellingen gevonden
+            </h2>
+            <p className="text-sm" style={{ color: "var(--muted)" }}>
+              Probeer een andere dag.
+            </p>
           </div>
         ) : (
           screenings.map((screening) => {
@@ -130,33 +186,7 @@ export default async function FeedPage({
         )}
       </div>
 
-      {/* Bottom navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur border-t border-gray-900 px-6 py-3 z-10">
-        <div className="max-w-2xl mx-auto flex items-center justify-around">
-          <Link href="/feed" className="flex flex-col items-center gap-1 text-purple-400">
-            <span className="text-xl">🏠</span>
-            <span className="text-xs">Feed</span>
-          </Link>
-          <Link
-            href="/feed"
-            className="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors"
-          >
-            <span className="text-xl">🎟️</span>
-            <span className="text-xs">Plans</span>
-          </Link>
-          <span className="flex flex-col items-center gap-1 text-gray-700 cursor-not-allowed">
-            <span className="text-xl">👥</span>
-            <span className="text-xs">Vrienden</span>
-          </span>
-          <Link
-            href="/profile"
-            className="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors"
-          >
-            <span className="text-xl">👤</span>
-            <span className="text-xs">Profiel</span>
-          </Link>
-        </div>
-      </nav>
+      <BottomNav active="feed" />
     </main>
   );
 }

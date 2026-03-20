@@ -76,16 +76,45 @@ export default function AttendanceButton({
     <button
       onClick={handleClick}
       disabled={isPending}
-      className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm border transition-colors ${
+      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all duration-150 hover:scale-[1.02] active:scale-[0.98] ${
+        isPending ? 'opacity-50' : ''
+      }`}
+      style={
         isGoing
-          ? 'bg-purple-900 border-purple-600 text-white'
-          : 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-500'
-      } ${isPending ? 'opacity-60' : ''}`}
+          ? {
+              background: 'linear-gradient(135deg, rgba(124,111,247,0.2), rgba(236,72,153,0.2))',
+              border: '1px solid rgba(124,111,247,0.4)',
+              color: '#9b8ef7',
+            }
+          : {
+              background: 'var(--elevated)',
+              border: '1px solid var(--border)',
+              color: 'var(--muted)',
+            }
+      }
     >
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
       <span>{formatTime(showtime)}</span>
-      <span className="text-xs text-gray-400">{cinema}</span>
-      {attendees.length > 0 && <AvatarStack attendees={attendees} max={3} />}
-      <span>{isGoing ? '✓' : '+'}</span>
+      <span style={{ opacity: 0.5 }}>·</span>
+      <span className="truncate max-w-[80px]">{cinema}</span>
+      {attendees.length > 0 && (
+        <>
+          <span style={{ opacity: 0.3 }}>|</span>
+          <AvatarStack attendees={attendees} max={3} />
+        </>
+      )}
+      <span className="ml-0.5">
+        {isGoing ? (
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        ) : (
+          '+'
+        )}
+      </span>
     </button>
   )
 }

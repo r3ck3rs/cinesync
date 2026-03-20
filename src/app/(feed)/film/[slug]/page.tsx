@@ -1,7 +1,7 @@
-import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { getMovieDetails, searchMovies, getPosterUrl, getDirector, formatRuntime, getReleaseYear } from "@/lib/tmdb";
+import BottomNav from "@/components/BottomNav";
 
 interface FilmPageProps {
   params: Promise<{ slug: string }>;
@@ -37,17 +37,38 @@ export default async function FilmPage({ params, searchParams }: FilmPageProps) 
 
   if (!movie) {
     return (
-      <main className="min-h-screen bg-black text-white pb-20">
-        <div className="max-w-2xl mx-auto px-6 py-8">
-          <Link href="/feed" className="text-purple-400 hover:text-purple-300 mb-6 block">
-            ← Terug naar feed
+      <main
+        className="min-h-screen pb-28"
+        style={{ background: "var(--bg)", color: "var(--text)" }}
+      >
+        <div className="max-w-md mx-auto px-4 py-6">
+          <Link
+            href="/feed"
+            className="inline-flex items-center gap-2 text-sm mb-8 transition-opacity hover:opacity-70"
+            style={{ color: "var(--muted)" }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Terug
           </Link>
           <div className="text-center py-20">
-            <p className="text-5xl mb-4">🎬</p>
-            <h2 className="text-xl font-semibold mb-2">Film niet gevonden</h2>
-            <p className="text-gray-400">Probeer een ander moment opnieuw.</p>
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
+              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+            >
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="2.18"/>
+                <line x1="7" y1="2" x2="7" y2="22"/>
+                <line x1="17" y1="2" x2="17" y2="22"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+              </svg>
+            </div>
+            <h2 className="font-display font-bold text-xl mb-2">Film niet gevonden</h2>
+            <p className="text-sm" style={{ color: "var(--muted)" }}>Probeer een ander moment opnieuw.</p>
           </div>
         </div>
+        <BottomNav active="feed" />
       </main>
     );
   }
@@ -56,120 +77,226 @@ export default async function FilmPage({ params, searchParams }: FilmPageProps) 
   const topCast = movie.credits.cast.slice(0, 5);
 
   return (
-    <main className="min-h-screen bg-black text-white pb-20">
-      {/* Header */}
-      <div className="sticky top-0 bg-black/90 backdrop-blur border-b border-gray-900 px-6 py-4 z-10">
-        <div className="max-w-2xl mx-auto">
-          <Link href="/feed" className="text-purple-400 hover:text-purple-300">
-            ← Terug
+    <main
+      className="min-h-screen pb-28"
+      style={{ background: "var(--bg)", color: "var(--text)" }}
+    >
+      {/* Sticky back header */}
+      <header
+        className="sticky top-0 z-10"
+        style={{
+          background: "rgba(8,8,17,0.88)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          borderBottom: "1px solid var(--border)",
+        }}
+      >
+        <div className="max-w-md mx-auto px-4 py-3.5 flex items-center justify-between">
+          <Link
+            href="/feed"
+            className="inline-flex items-center gap-2 text-sm font-medium transition-opacity hover:opacity-70"
+            style={{ color: "var(--muted)" }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Terug
           </Link>
+          <span
+            className="font-display font-bold text-sm"
+            style={{ color: "var(--muted)" }}
+          >
+            Film
+          </span>
+          <div className="w-14" />
         </div>
-      </div>
+      </header>
 
-      {/* Content */}
-      <div className="max-w-2xl mx-auto px-6 pt-6">
-        {/* Poster + Title */}
-        <div className="mb-8">
-          <div className="flex gap-6 mb-8">
-            {movie.poster_path ? (
-              <Image
-                src={getPosterUrl(movie.poster_path, "w342")}
-                alt={movie.title}
-                width={140}
-                height={210}
-                className="rounded-xl object-cover flex-shrink-0 shadow-lg"
-              />
-            ) : (
-              <div className="w-[140px] h-[210px] bg-gray-800 rounded-xl flex items-center justify-center flex-shrink-0">
-                <span className="text-4xl">🎬</span>
-              </div>
-            )}
-
-            <div className="flex-1 flex flex-col justify-between">
-              <div>
-                <h1 className="text-2xl font-bold leading-tight mb-2">{movie.title}</h1>
-                <p className="text-gray-400 text-sm mb-2">
-                  {getReleaseYear(movie.release_date)} {movie.genres.length > 0 && `• ${movie.genres.map((g) => g.name).join(", ")}`}
-                </p>
-                {movie.runtime > 0 && (
-                  <p className="text-gray-400 text-sm mb-3">{formatRuntime(movie.runtime)}</p>
-                )}
-              </div>
-
-              {/* Rating */}
-              <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold">{movie.vote_average.toFixed(1)}</span>
-                <span className="text-yellow-400">★</span>
-                <span className="text-gray-400 text-sm">/ 10</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Synopsis */}
-          {movie.overview && (
-            <div className="mb-8">
-              <h2 className="text-sm font-semibold text-gray-300 mb-2 uppercase">Sinopsis</h2>
-              <p className="text-gray-400 leading-relaxed text-sm">{movie.overview}</p>
+      <div className="max-w-md mx-auto px-4 pt-6">
+        {/* Hero: Poster + Title */}
+        <div
+          className="flex gap-5 mb-6 p-4 rounded-2xl"
+          style={{
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          {movie.poster_path ? (
+            <Image
+              src={getPosterUrl(movie.poster_path, "w342")}
+              alt={movie.title}
+              width={110}
+              height={165}
+              className="rounded-xl object-cover flex-shrink-0"
+              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}
+            />
+          ) : (
+            <div
+              className="flex-shrink-0 rounded-xl flex items-center justify-center"
+              style={{
+                width: 110,
+                height: 165,
+                background: "linear-gradient(135deg, var(--elevated), var(--overlay))",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+              }}
+            >
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--subtle)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="2.18"/>
+                <line x1="7" y1="2" x2="7" y2="22"/>
+                <line x1="17" y1="2" x2="17" y2="22"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+              </svg>
             </div>
           )}
 
-          {/* Director */}
-          {director && (
-            <div className="mb-8">
-              <h2 className="text-sm font-semibold text-gray-300 mb-2 uppercase">Regisseur</h2>
-              <p className="text-white">{director}</p>
-            </div>
-          )}
-
-          {/* Cast */}
-          {topCast.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-sm font-semibold text-gray-300 mb-3 uppercase">Cast</h2>
-              <div className="space-y-2">
-                {topCast.map((actor) => (
-                  <div key={actor.id}>
-                    <p className="text-white text-sm font-medium">{actor.name}</p>
-                    <p className="text-gray-400 text-xs">{actor.character}</p>
-                  </div>
+          <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+            <div>
+              <h1
+                className="font-display font-bold text-xl leading-tight mb-2"
+                style={{ color: "var(--text)" }}
+              >
+                {movie.title}
+              </h1>
+              <div className="flex flex-wrap gap-1 mb-3">
+                {movie.genres.slice(0, 3).map((g) => (
+                  <span
+                    key={g.name}
+                    className="text-[10px] font-medium px-2 py-0.5 rounded-full"
+                    style={{
+                      background: "rgba(124,111,247,0.12)",
+                      color: "#9b8ef7",
+                      border: "1px solid rgba(124,111,247,0.2)",
+                    }}
+                  >
+                    {g.name}
+                  </span>
                 ))}
               </div>
+              <p className="text-xs" style={{ color: "var(--muted)" }}>
+                {getReleaseYear(movie.release_date)}
+                {movie.runtime > 0 && (
+                  <> · {formatRuntime(movie.runtime)}</>
+                )}
+              </p>
             </div>
-          )}
 
-          {/* Production */}
-          {movie.production_companies.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-sm font-semibold text-gray-300 mb-2 uppercase">Productie</h2>
-              <p className="text-gray-400 text-sm">{movie.production_companies.map((c) => c.name).join(", ")}</p>
-            </div>
-          )}
+            {/* Rating */}
+            {movie.vote_average > 0 && (
+              <div className="flex items-center gap-1.5">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#f5c518" stroke="#f5c518" strokeWidth="1">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                <span className="font-display font-bold text-base" style={{ color: "#f5c518" }}>
+                  {movie.vote_average.toFixed(1)}
+                </span>
+                <span className="text-xs" style={{ color: "var(--muted)" }}>/ 10</span>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Synopsis */}
+        {movie.overview && (
+          <section className="mb-5">
+            <h2
+              className="text-[10px] font-bold uppercase tracking-widest mb-3"
+              style={{ color: "var(--muted)" }}
+            >
+              Synopsis
+            </h2>
+            <p
+              className="text-sm leading-relaxed"
+              style={{ color: "rgba(240,240,248,0.75)" }}
+            >
+              {movie.overview}
+            </p>
+          </section>
+        )}
+
+        {/* Director */}
+        {director && (
+          <section className="mb-5">
+            <h2
+              className="text-[10px] font-bold uppercase tracking-widest mb-3"
+              style={{ color: "var(--muted)" }}
+            >
+              Regisseur
+            </h2>
+            <div
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-xl"
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              <div
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold"
+                style={{ background: "rgba(124,111,247,0.15)", color: "#9b8ef7" }}
+              >
+                {director[0]}
+              </div>
+              <span className="text-sm font-medium">{director}</span>
+            </div>
+          </section>
+        )}
+
+        {/* Cast */}
+        {topCast.length > 0 && (
+          <section className="mb-5">
+            <h2
+              className="text-[10px] font-bold uppercase tracking-widest mb-3"
+              style={{ color: "var(--muted)" }}
+            >
+              Cast
+            </h2>
+            <div className="space-y-2">
+              {topCast.map((actor) => (
+                <div
+                  key={actor.id}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
+                  style={{
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
+                  }}
+                >
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                    style={{
+                      background: "var(--elevated)",
+                      color: "var(--muted)",
+                    }}
+                  >
+                    {actor.name[0]}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{actor.name}</p>
+                    <p className="text-xs truncate" style={{ color: "var(--muted)" }}>
+                      {actor.character}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Production */}
+        {movie.production_companies.length > 0 && (
+          <section className="mb-5">
+            <h2
+              className="text-[10px] font-bold uppercase tracking-widest mb-2"
+              style={{ color: "var(--muted)" }}
+            >
+              Productie
+            </h2>
+            <p className="text-xs" style={{ color: "var(--muted)" }}>
+              {movie.production_companies.map((c) => c.name).join(", ")}
+            </p>
+          </section>
+        )}
       </div>
 
-      {/* Bottom navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur border-t border-gray-900 px-6 py-3 z-10">
-        <div className="max-w-2xl mx-auto flex items-center justify-around">
-          <Link href="/feed" className="flex flex-col items-center gap-1 text-purple-400">
-            <span className="text-xl">🏠</span>
-            <span className="text-xs">Feed</span>
-          </Link>
-          <Link href="/plans" className="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors">
-            <span className="text-xl">🎟️</span>
-            <span className="text-xs">Plans</span>
-          </Link>
-          <Link href="/plans/new" className="flex flex-col items-center gap-1">
-            <span className="w-10 h-10 bg-purple-600 hover:bg-purple-700 rounded-full flex items-center justify-center text-lg transition-colors">+</span>
-          </Link>
-          <Link href="/friends" className="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors">
-            <span className="text-xl">👥</span>
-            <span className="text-xs">Vrienden</span>
-          </Link>
-          <Link href="/profile" className="flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-colors">
-            <span className="text-xl">👤</span>
-            <span className="text-xs">Profiel</span>
-          </Link>
-        </div>
-      </nav>
+      <BottomNav active="feed" />
     </main>
   );
 }

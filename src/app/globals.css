@@ -1,3 +1,91 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --bg: #080811;
+  --surface: #0e0e1b;
+  --elevated: #151524;
+  --overlay: #1b1b30;
+  --border: rgba(255, 255, 255, 0.06);
+  --border-md: rgba(255, 255, 255, 0.1);
+  --brand: #7c6ff7;
+  --brand-2: #ec4899;
+  --gold: #f5c518;
+  --text: #f0f0f8;
+  --muted: #68688a;
+  --subtle: #353552;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body, system-ui, sans-serif);
+  overscroll-behavior: none;
+  min-height: 100dvh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Input autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--surface) inset !important;
+  -webkit-text-fill-color: var(--text) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display, Georgia, serif);
+  }
+
+  .text-muted {
+    color: var(--muted);
+  }
+
+  .bg-cinema {
+    background-color: var(--bg);
+  }
+
+  .bg-surface {
+    background-color: var(--surface);
+  }
+
+  .bg-elevated {
+    background-color: var(--elevated);
+  }
+
+  .border-cinema {
+    border-color: var(--border);
+  }
+
+  .glass {
+    background: rgba(21, 21, 36, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+}

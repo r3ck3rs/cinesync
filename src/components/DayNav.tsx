@@ -22,24 +22,53 @@ export default function DayNav({ currentDay }: { currentDay: string }) {
   const isToday = currentDay === todayStr()
 
   return (
-    <div className="flex items-center justify-between px-6 py-2 border-t border-gray-900">
+    <div
+      className="flex items-center justify-between px-4 py-2.5"
+      style={{ borderTop: '1px solid var(--border)' }}
+    >
       <button
         onClick={() => router.push(`/feed?day=${addDays(currentDay, -1)}`)}
         disabled={isToday}
-        className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-lg"
+        className="w-8 h-8 flex items-center justify-center rounded-full transition-all duration-150 hover:bg-white/5 disabled:opacity-20 disabled:cursor-not-allowed"
         aria-label="Vorige dag"
+        style={{ color: 'var(--muted)' }}
       >
-        ←
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
       </button>
-      <span className="text-sm font-medium text-gray-200 capitalize">
-        {formatDay(currentDay)}
-      </span>
+
+      <div className="flex flex-col items-center gap-0.5">
+        {isToday && (
+          <span
+            className="text-[10px] font-semibold uppercase tracking-widest"
+            style={{
+              background: 'linear-gradient(135deg, #7c6ff7, #ec4899)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            Vandaag
+          </span>
+        )}
+        <span
+          className="text-sm font-medium capitalize"
+          style={{ color: isToday ? 'var(--text)' : 'var(--muted)' }}
+        >
+          {formatDay(currentDay)}
+        </span>
+      </div>
+
       <button
         onClick={() => router.push(`/feed?day=${addDays(currentDay, 1)}`)}
-        className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-white transition-colors text-lg"
+        className="w-8 h-8 flex items-center justify-center rounded-full transition-all duration-150 hover:bg-white/5"
         aria-label="Volgende dag"
+        style={{ color: 'var(--muted)' }}
       >
-        →
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
       </button>
     </div>
   )

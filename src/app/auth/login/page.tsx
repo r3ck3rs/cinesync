@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -30,43 +31,143 @@ export default function LoginPage() {
   }
 
   return (
-    <main style={{ display: "flex", minHeight: "100vh", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#000", color: "#fff", fontFamily: "sans-serif" }}>
-      <h1 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "0.5rem" }}>🎬 CineSync</h1>
-      <p style={{ color: "#888", marginBottom: "2rem" }}>Inloggen</p>
+    <main
+      className="min-h-screen flex flex-col items-center justify-center px-5"
+      style={{ background: "var(--bg)" }}
+    >
+      {/* Ambient glow */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "fixed",
+          top: "-10%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "500px",
+          height: "400px",
+          borderRadius: "50%",
+          background: "radial-gradient(ellipse, rgba(124,111,247,0.1) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }}
+      />
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", maxWidth: "360px", padding: "0 1rem" }}>
-        <input
-          type="email"
-          placeholder="E-mailadres"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid #333", background: "#111", color: "#fff", fontSize: "1rem" }}
-        />
-        <input
-          type="password"
-          placeholder="Wachtwoord"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid #333", background: "#111", color: "#fff", fontSize: "1rem" }}
-        />
+      <div
+        className="w-full max-w-[380px] rounded-3xl p-8"
+        style={{
+          background: "var(--surface)",
+          border: "1px solid var(--border-md)",
+          boxShadow: "0 32px 64px rgba(0,0,0,0.4)",
+        }}
+      >
+        {/* Brand */}
+        <div className="text-center mb-8">
+          <div className="mb-4">
+            <span
+              className="font-display text-3xl font-black tracking-tight"
+              style={{
+                background: "linear-gradient(135deg, #f0f0f8 0%, #9b8ef7 50%, #ec4899 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              CineSync
+            </span>
+          </div>
+          <p className="text-sm" style={{ color: "var(--muted)" }}>
+            Welkom terug
+          </p>
+        </div>
 
-        {error && <p style={{ color: "#f87171", fontSize: "0.9rem" }}>{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div>
+            <input
+              type="email"
+              placeholder="E-mailadres"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-4 py-3.5 rounded-xl text-sm outline-none transition-all duration-150"
+              style={{
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
+                color: "var(--text)",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "rgba(124,111,247,0.5)";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,111,247,0.1)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "var(--border)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            />
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ padding: "0.75rem", borderRadius: "8px", background: "#e11d48", color: "#fff", fontWeight: "bold", fontSize: "1rem", border: "none", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1 }}
+          <div>
+            <input
+              type="password"
+              placeholder="Wachtwoord"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-4 py-3.5 rounded-xl text-sm outline-none transition-all duration-150"
+              style={{
+                background: "var(--elevated)",
+                border: "1px solid var(--border)",
+                color: "var(--text)",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "rgba(124,111,247,0.5)";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,111,247,0.1)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "var(--border)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            />
+          </div>
+
+          {error && (
+            <p
+              className="text-xs px-3 py-2 rounded-lg"
+              style={{ color: "#f87171", background: "rgba(248,113,113,0.1)" }}
+            >
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3.5 rounded-xl font-semibold text-sm text-white transition-all duration-150 hover:scale-[1.01] active:scale-[0.99]"
+            style={{
+              background: loading
+                ? "var(--overlay)"
+                : "linear-gradient(135deg, #7c6ff7 0%, #ec4899 100%)",
+              boxShadow: loading ? "none" : "0 4px 20px rgba(124,111,247,0.3)",
+              cursor: loading ? "not-allowed" : "pointer",
+              opacity: loading ? 0.7 : 1,
+            }}
+          >
+            {loading ? "Bezig..." : "Inloggen"}
+          </button>
+        </form>
+
+        <p
+          className="text-center text-xs mt-6"
+          style={{ color: "var(--muted)" }}
         >
-          {loading ? "Bezig..." : "Inloggen"}
-        </button>
-
-        <p style={{ textAlign: "center", color: "#888", fontSize: "0.9rem" }}>
           Nog geen account?{" "}
-          <a href="/auth/register" style={{ color: "#e11d48" }}>Registreer</a>
+          <Link
+            href="/auth/register"
+            className="font-semibold transition-colors"
+            style={{ color: "#9b8ef7" }}
+          >
+            Registreer
+          </Link>
         </p>
-      </form>
+      </div>
     </main>
   );
 }
