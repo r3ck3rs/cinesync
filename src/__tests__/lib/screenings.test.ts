@@ -112,4 +112,48 @@ describe("flattenScreenings", () => {
     expect(row!.cinema).toBe("Pathé Schouwburgplein");
     expect(row!.ticketUrl).toBe("/kaartjes/200");
   });
+
+  it("id format is cinemaSlug|movieSlug|datetime", () => {
+    const screenings = parseScreenings(SAMPLE_HTML);
+    const flat = flattenScreenings(screenings, new Date("2020-01-01"));
+    const row = flat.find(
+      (f) =>
+        f.movieSlug === "champagne-2026" &&
+        f.datetime === "2030-06-01T15:00:00+02:00"
+    );
+    expect(row).toBeDefined();
+    expect(row!.id).toBe("cinerama|champagne-2026|2030-06-01T15:00:00+02:00");
+  });
+
+  it("filters out showtimes strictly in the past", () => {
+    // Build a screening with one past and one future showtime relative to now
+    const past = new Date(Date.now() - 60_000).toISOString();
+    const future = new Date(Date.now() + 60_000).toISOString();
+    const screenings = [
+      {
+        id: "cinema|movie",
+        cinema: "Test Cinema",
+        cinemaSlug: "cinema",
+        movieTitle: "Test Movie",
+        movieSlug: "movie",
+        showtimes: [
+          { datetime: past, ticketUrl: "/past" },
+          { datetime: future, ticketUrl: "/future" },
+        ],
+      },
+    ];
+    const flat = flattenScreenings(screenings);
+    expect(flat).toHaveLength(1);
+    expect(flat[0].ticketUrl).toBe("/future");
+  });
+
+  it("returns results sorted chronologically (ascending)", () => {
+    const screenings = parseScreenings(SAMPLE_HTML);
+    const flat = flattenScreenings(screenings, new Date("2020-01-01"));
+    for (let i = 1; i < flat.length; i++) {
+      expect(new Date(flat[i].datetime).getTime()).toBeGreaterThanOrEqual(
+        new Date(flat[i - 1].datetime).getTime()
+      );
+    }
+  });
 });

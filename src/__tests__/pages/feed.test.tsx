@@ -30,6 +30,25 @@ jest.mock('next/image', () => ({
 
 jest.mock('@/lib/tmdb', () => ({
   getPosterUrl: jest.fn((path: string) => `https://image.tmdb.org/t/p/w185${path}`),
+  searchMovies: jest.fn().mockResolvedValue([]),
+}))
+
+// Mock screenings lib to avoid cheerio/undici ReadableStream dependency in jsdom
+jest.mock('@/lib/screenings', () => ({
+  getRotterdamScreenings: jest.fn().mockResolvedValue([]),
+  flattenScreenings: jest.fn().mockReturnValue([]),
+}))
+
+jest.mock('@/components/ScreeningCard', () => ({
+  __esModule: true,
+  default: () => <div data-testid="screening-card" />,
+}))
+
+jest.mock('@/components/DayNav', () => ({
+  __esModule: true,
+  default: ({ currentDay }: { currentDay: string }) => (
+    <div data-testid="day-nav">{currentDay}</div>
+  ),
 }))
 
 function setupUser(email: string | null) {
@@ -54,30 +73,28 @@ describe('Feed page', () => {
 
   it('renders the CineSync header for an authenticated user', async () => {
     setupUser('user@example.com')
-    render(await FeedPage())
+    render(await FeedPage({ searchParams: {} }))
     expect(screen.getByText('🎬 CineSync')).toBeInTheDocument()
   })
 
-  it('shows the empty state when there are no plans', async () => {
+  it('shows the empty state when there are no screenings', async () => {
     setupUser('user@example.com')
-    render(await FeedPage())
-    expect(screen.getByText('Geen plans vanavond')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Plan aanmaken/i })).toHaveAttribute(
-      'href',
-      '/plans/new'
-    )
+    render(await FeedPage({ searchParams: {} }))
+    expect(screen.getByText('Geen voorstellingen gevonden')).toBeInTheDocument()
   })
 
   it('shows bottom navigation', async () => {
     setupUser('user@example.com')
-    render(await FeedPage())
+    render(await FeedPage({ searchParams: {} }))
     expect(screen.getByText('Feed')).toBeInTheDocument()
     expect(screen.getByText('Plans')).toBeInTheDocument()
     expect(screen.getByText('Profiel')).toBeInTheDocument()
   })
 
-  it('redirects unauthenticated users to /auth/login', async () => {
+  it('renders without crashing for unauthenticated users', async () => {
     setupUser(null)
-    await expect(FeedPage()).rejects.toThrow('NEXT_REDIRECT:/auth/login')
+    const result = await FeedPage({ searchParams: {} })
+    render(result)
+    expect(screen.getByText('🎬 CineSync')).toBeInTheDocument()
   })
 })
