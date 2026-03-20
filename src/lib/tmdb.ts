@@ -48,6 +48,7 @@ export async function searchMovies(query: string): Promise<TMDbMovie[]> {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
         "Content-Type": "application/json",
       },
+      next: { revalidate: 0 },
     }
   );
   if (!res.ok) return [];
