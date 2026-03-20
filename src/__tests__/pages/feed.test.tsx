@@ -38,17 +38,19 @@ describe('Feed page', () => {
   it('shows the empty state when there are no plans', async () => {
     setupUser('user@example.com')
     render(await FeedPage())
-    expect(screen.getByText('Nog geen plannen')).toBeInTheDocument()
+    expect(screen.getByText('Geen plans vanavond')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Plan aanmaken/i })).toHaveAttribute(
       'href',
       '/plans/new'
     )
   })
 
-  it('displays the logged-in user email in the header', async () => {
-    setupUser('cinefan@example.com')
+  it('shows bottom navigation', async () => {
+    setupUser('user@example.com')
     render(await FeedPage())
-    expect(screen.getByText('cinefan@example.com')).toBeInTheDocument()
+    expect(screen.getByText('Feed')).toBeInTheDocument()
+    expect(screen.getByText('Plans')).toBeInTheDocument()
+    expect(screen.getByText('Profiel')).toBeInTheDocument()
   })
 
   it('redirects unauthenticated users to /auth/login', async () => {
