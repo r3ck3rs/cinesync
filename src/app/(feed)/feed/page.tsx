@@ -103,7 +103,9 @@ export default async function FeedPage({
       for (const row of rows) {
         const p = profileMap.get(row.user_id);
         // Supabase returns showtime normalized to UTC — use as-is for key
-        const key = `${row.movie_slug}|${row.cinema_slug}|${row.showtime}`;
+        // Normalize showtime to UTC ISO so it matches the key used below
+        const normalizedShowtime = new Date(row.showtime).toISOString();
+        const key = `${row.movie_slug}|${row.cinema_slug}|${normalizedShowtime}`;
         if (!attendeesMap.has(key)) attendeesMap.set(key, []);
         attendeesMap.get(key)!.push({
           userId: row.user_id,
