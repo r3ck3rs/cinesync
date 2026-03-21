@@ -42,12 +42,12 @@ export default function RegisterPage() {
           style={{
             background: "var(--surface)",
             border: "1px solid var(--border-md)",
-            boxShadow: "0 32px 64px rgba(0,0,0,0.4)",
+            boxShadow: "0 32px 64px rgba(0,0,0,0.6)",
           }}
         >
           <div
             className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-6"
-            style={{ background: "rgba(124,111,247,0.12)" }}
+            style={{ background: "var(--elevated)" }}
           >
             ✉️
           </div>
@@ -64,7 +64,7 @@ export default function RegisterPage() {
           <Link
             href="/auth/login"
             className="text-sm font-semibold transition-colors"
-            style={{ color: "#9b8ef7" }}
+            style={{ color: "var(--text)" }}
           >
             Terug naar inloggen
           </Link>
@@ -78,28 +78,12 @@ export default function RegisterPage() {
       className="min-h-screen flex flex-col items-center justify-center px-5"
       style={{ background: "var(--bg)" }}
     >
-      {/* Ambient glow */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: "fixed",
-          top: "-10%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "500px",
-          height: "400px",
-          borderRadius: "50%",
-          background: "radial-gradient(ellipse, rgba(236,72,153,0.08) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }}
-      />
-
       <div
         className="w-full max-w-[380px] rounded-3xl p-8"
         style={{
           background: "var(--surface)",
           border: "1px solid var(--border-md)",
-          boxShadow: "0 32px 64px rgba(0,0,0,0.4)",
+          boxShadow: "0 32px 64px rgba(0,0,0,0.6)",
         }}
       >
         {/* Brand */}
@@ -107,14 +91,9 @@ export default function RegisterPage() {
           <div className="mb-4">
             <span
               className="font-display text-3xl font-black tracking-tight"
-              style={{
-                background: "linear-gradient(135deg, #f0f0f8 0%, #9b8ef7 50%, #ec4899 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
+              style={{ color: "var(--text)" }}
             >
-              CineSync
+              🎬 CineSync
             </span>
           </div>
           <p className="text-sm" style={{ color: "var(--muted)" }}>
@@ -137,8 +116,8 @@ export default function RegisterPage() {
                 color: "var(--text)",
               }}
               onFocus={(e) => {
-                e.currentTarget.style.borderColor = "rgba(124,111,247,0.5)";
-                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,111,247,0.1)";
+                e.currentTarget.style.borderColor = "var(--border-md)";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(255,255,255,0.05)";
               }}
               onBlur={(e) => {
                 e.currentTarget.style.borderColor = "var(--border)";
@@ -162,8 +141,8 @@ export default function RegisterPage() {
                 color: "var(--text)",
               }}
               onFocus={(e) => {
-                e.currentTarget.style.borderColor = "rgba(124,111,247,0.5)";
-                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(124,111,247,0.1)";
+                e.currentTarget.style.borderColor = "var(--border-md)";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(255,255,255,0.05)";
               }}
               onBlur={(e) => {
                 e.currentTarget.style.borderColor = "var(--border)";
@@ -184,12 +163,10 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl font-semibold text-sm text-white transition-all duration-150 hover:scale-[1.01] active:scale-[0.99]"
+            className="w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-150 hover:scale-[1.01] active:scale-[0.99]"
             style={{
-              background: loading
-                ? "var(--overlay)"
-                : "linear-gradient(135deg, #7c6ff7 0%, #ec4899 100%)",
-              boxShadow: loading ? "none" : "0 4px 20px rgba(124,111,247,0.3)",
+              background: loading ? "var(--overlay)" : "var(--text)",
+              color: loading ? "var(--muted)" : "var(--bg)",
               cursor: loading ? "not-allowed" : "pointer",
               opacity: loading ? 0.7 : 1,
             }}
@@ -206,7 +183,7 @@ export default function RegisterPage() {
           <Link
             href="/auth/login"
             className="font-semibold transition-colors"
-            style={{ color: "#9b8ef7" }}
+            style={{ color: "var(--text)" }}
           >
             Inloggen
           </Link>
