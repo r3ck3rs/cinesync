@@ -3,19 +3,13 @@ import Link from "next/link";
 function FilmIcon() {
   return (
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="2" y="6" width="28" height="20" rx="3" stroke="url(#g)" strokeWidth="2"/>
-      <rect x="2" y="10" width="4" height="4" fill="url(#g)" rx="0.5"/>
-      <rect x="2" y="18" width="4" height="4" fill="url(#g)" rx="0.5"/>
-      <rect x="26" y="10" width="4" height="4" fill="url(#g)" rx="0.5"/>
-      <rect x="26" y="18" width="4" height="4" fill="url(#g)" rx="0.5"/>
-      <line x1="14" y1="6" x2="14" y2="26" stroke="url(#g)" strokeWidth="1.5"/>
-      <line x1="18" y1="6" x2="18" y2="26" stroke="url(#g)" strokeWidth="1.5"/>
-      <defs>
-        <linearGradient id="g" x1="2" y1="6" x2="30" y2="26" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#7c6ff7"/>
-          <stop offset="1" stopColor="#ec4899"/>
-        </linearGradient>
-      </defs>
+      <rect x="2" y="6" width="28" height="20" rx="3" stroke="white" strokeWidth="2"/>
+      <rect x="2" y="10" width="4" height="4" fill="white" rx="0.5"/>
+      <rect x="2" y="18" width="4" height="4" fill="white" rx="0.5"/>
+      <rect x="26" y="10" width="4" height="4" fill="white" rx="0.5"/>
+      <rect x="26" y="18" width="4" height="4" fill="white" rx="0.5"/>
+      <line x1="14" y1="6" x2="14" y2="26" stroke="white" strokeWidth="1.5"/>
+      <line x1="18" y1="6" x2="18" y2="26" stroke="white" strokeWidth="1.5"/>
     </svg>
   );
 }
@@ -61,25 +55,8 @@ export default function Home() {
       className="min-h-screen flex flex-col"
       style={{ background: "var(--bg)", color: "var(--text)" }}
     >
-      {/* Ambient glow */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: "fixed",
-          top: "-20%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "600px",
-          height: "600px",
-          borderRadius: "50%",
-          background: "radial-gradient(ellipse, rgba(124,111,247,0.12) 0%, transparent 70%)",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
-
       {/* Hero */}
-      <section className="relative flex flex-col items-center justify-center flex-1 px-6 py-24 text-center z-10">
+      <section className="relative flex flex-col items-center justify-center flex-1 px-6 py-24 text-center">
         {/* Logo mark */}
         <div className="mb-8">
           <FilmIcon />
@@ -88,12 +65,7 @@ export default function Home() {
         {/* Title */}
         <h1
           className="font-display text-6xl sm:text-8xl font-black tracking-tight mb-5 leading-none"
-          style={{
-            background: "linear-gradient(135deg, #f0f0f8 0%, #9b8ef7 40%, #ec4899 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
+          style={{ color: "var(--text)" }}
         >
           CineSync
         </h1>
@@ -110,11 +82,8 @@ export default function Home() {
         <div className="flex flex-col gap-3 w-full max-w-[280px]">
           <Link
             href="/auth/register"
-            className="relative px-8 py-3.5 rounded-2xl font-semibold text-base text-white text-center overflow-hidden transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-            style={{
-              background: "linear-gradient(135deg, #7c6ff7 0%, #ec4899 100%)",
-              boxShadow: "0 4px 32px rgba(124,111,247,0.35)",
-            }}
+            className="px-8 py-3.5 rounded-2xl font-semibold text-base text-black text-center transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            style={{ background: "var(--text)" }}
           >
             Registreren
           </Link>
@@ -133,7 +102,7 @@ export default function Home() {
       </section>
 
       {/* Features */}
-      <section className="relative px-5 pb-16 z-10">
+      <section className="px-5 pb-16">
         <div className="max-w-sm mx-auto space-y-3">
           {features.map(({ icon, title, desc }) => (
             <div
@@ -147,8 +116,8 @@ export default function Home() {
               <div
                 className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
                 style={{
-                  background: "rgba(124,111,247,0.12)",
-                  color: "#9b8ef7",
+                  background: "var(--elevated)",
+                  color: "var(--muted)",
                 }}
               >
                 {icon}
@@ -171,7 +140,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer
-        className="pb-8 text-center text-xs z-10"
+        className="pb-8 text-center text-xs"
         style={{ color: "var(--subtle)" }}
       >
         &copy; {new Date().getFullYear()} CineSync · Rotterdam
