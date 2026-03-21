@@ -164,7 +164,7 @@ export default async function FilmPage({ params, searchParams }: FilmPageProps) 
                     className="text-[10px] font-medium px-2 py-0.5 rounded-full"
                     style={{
                       background: "rgba(124,111,247,0.12)",
-                      color: "#9b8ef7",
+                      color: "var(--muted)",
                       border: "1px solid rgba(124,111,247,0.2)",
                     }}
                   >
@@ -231,7 +231,7 @@ export default async function FilmPage({ params, searchParams }: FilmPageProps) 
             >
               <div
                 className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold"
-                style={{ background: "rgba(124,111,247,0.15)", color: "#9b8ef7" }}
+                style={{ background: "rgba(124,111,247,0.15)", color: "var(--muted)" }}
               >
                 {director[0]}
               </div>
