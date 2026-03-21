@@ -63,7 +63,7 @@ export default function BottomNav({ active = 'feed' }: BottomNavProps) {
     <nav
       className="fixed bottom-0 left-0 right-0 z-20 px-2 pb-safe"
       style={{
-        background: 'rgba(14,14,27,0.92)',
+        background: 'rgba(0,0,0,0.92)',
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
         borderTop: '1px solid var(--border)',
@@ -73,14 +73,14 @@ export default function BottomNav({ active = 'feed' }: BottomNavProps) {
         {items.map((item) => {
           const isActive = active === item.id
           const style = isActive
-            ? { color: '#9b8ef7' }
+            ? { color: 'var(--text)' }
             : item.disabled
             ? { color: 'var(--subtle)', cursor: 'not-allowed' }
             : { color: 'var(--muted)' }
 
           const inner = (
             <div className="flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl transition-all duration-150">
-              <div className={isActive ? 'drop-shadow-[0_0_8px_rgba(124,111,247,0.6)]' : ''}>
+              <div>
                 {item.icon}
               </div>
               <span className="text-[10px] font-medium leading-none">{item.label}</span>
