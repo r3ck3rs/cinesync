@@ -104,7 +104,7 @@ export default async function ProfilePage() {
           <div
             className="w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-display font-black text-white mb-4"
             style={{
-              background: "linear-gradient(135deg, #7c6ff7 0%, #ec4899 100%)",
+              background: "var(--text)", color: "var(--bg)",
               boxShadow: "0 8px 32px rgba(124,111,247,0.3)",
             }}
           >
@@ -136,7 +136,7 @@ export default async function ProfilePage() {
               <div
                 className="font-display font-black text-2xl mb-1"
                 style={{
-                  background: "linear-gradient(135deg, #9b8ef7, #ec4899)",
+                  background: "var(--elevated)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
