@@ -49,19 +49,24 @@ export default function AttendanceButton({
     }
 
     if (isGoing) {
+      // Optimistic: remove self
       setIsGoing(false)
       setAttendees(attendees.filter((a) => a.userId !== userId))
     } else {
+      // Optimistic: add self
       setIsGoing(true)
-      setAttendees([
-        ...attendees,
-        {
-          userId,
-          firstName: currentUserFirstName,
-          lastName: currentUserLastName,
-          avatarUrl: currentUserAvatarUrl,
-        },
-      ])
+      const alreadyIn = attendees.some((a) => a.userId === userId)
+      if (!alreadyIn) {
+        setAttendees([
+          ...attendees,
+          {
+            userId,
+            firstName: currentUserFirstName,
+            lastName: currentUserLastName,
+            avatarUrl: currentUserAvatarUrl,
+          },
+        ])
+      }
     }
 
     startTransition(async () => {
@@ -76,33 +81,39 @@ export default function AttendanceButton({
           ticketUrl,
         })
 
-        const enriched = result.attendees.map(a =>
+        // Enrich server response with local profile data when missing
+        const enriched: AttendeeInfo[] = result.attendees.map(a =>
           a.userId === userId && !a.firstName
             ? { ...a, firstName: currentUserFirstName, lastName: currentUserLastName, avatarUrl: currentUserAvatarUrl }
             : a
         )
 
-        // Guard: if server says attending but user is missing (RLS profile join can fail silently)
-        const finalAttendees =
-          result.attending && !enriched.some((a) => a.userId === userId)
-            ? [...enriched, { userId: userId!, firstName: currentUserFirstName, lastName: currentUserLastName, avatarUrl: currentUserAvatarUrl }]
-            : enriched
+        // Guard: server says attending but profile join missed current user (RLS edge case)
+        const hasSelf = enriched.some((a) => a.userId === userId)
+        const finalAttendees = result.attending && !hasSelf
+          ? [...enriched, { userId: userId!, firstName: currentUserFirstName, lastName: currentUserLastName, avatarUrl: currentUserAvatarUrl }]
+          : enriched
 
         setIsGoing(result.attending)
         setAttendees(finalAttendees)
       } catch {
+        // Rollback on error
         setIsGoing(initialIsGoing)
         setAttendees(initialAttendees)
       }
     })
   }
 
+  // Avatar size: w-6 h-6 (24px) — button matches exactly
+  const AVATAR_SIZE = 'w-6 h-6'
+
   return (
     <div className={`flex items-center${isPending ? ' opacity-60' : ''}`}>
+      {/* All attendees as overlapping avatars */}
       {attendees.map((a, i) => (
         <div
           key={a.userId}
-          style={{ marginLeft: i === 0 ? 0 : '-8px', zIndex: attendees.length - i }}
+          style={{ marginLeft: i === 0 ? 0 : '-6px', zIndex: attendees.length - i }}
         >
           <Avatar
             userId={a.userId}
@@ -113,18 +124,28 @@ export default function AttendanceButton({
           />
         </div>
       ))}
-      <button
-        onClick={handleClick}
-        disabled={isPending}
-        style={{ marginLeft: attendees.length > 0 ? '-8px' : 0, zIndex: 0 }}
-        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ring-2 ring-[var(--surface)] transition-all ${
-          isGoing
-            ? 'bg-white text-black'
-            : 'bg-[var(--subtle)] text-[var(--muted)] hover:bg-white hover:text-black'
-        }`}
-      >
-        {isGoing ? '✓' : '+'}
-      </button>
+
+      {/* + button: only shown when NOT going. Hidden when going (avatar replaces it) */}
+      {!isGoing && (
+        <button
+          onClick={handleClick}
+          disabled={isPending}
+          style={{ marginLeft: attendees.length > 0 ? '-6px' : 0, zIndex: 0 }}
+          className={`${AVATAR_SIZE} rounded-full flex items-center justify-center text-[10px] font-bold ring-2 ring-[var(--surface)] transition-all bg-[var(--subtle)] text-[var(--muted)] hover:bg-white hover:text-black`}
+        >
+          +
+        </button>
+      )}
+
+      {/* When going: tapping any avatar removes attendance */}
+      {isGoing && (
+        <button
+          onClick={handleClick}
+          disabled={isPending}
+          className="sr-only"
+          aria-label="Verwijder aanwezigheid"
+        />
+      )}
     </div>
   )
 }
