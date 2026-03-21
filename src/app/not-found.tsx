@@ -12,7 +12,7 @@ export default function NotFound() {
         </p>
         <Link
           href="/"
-          className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-full font-medium transition-colors"
+          className="px-6 py-3 rounded-full font-medium transition-colors hover:opacity-80" style={{background:"var(--text)",color:"var(--bg)"}}
         >
           ← Terug naar home
         </Link>
