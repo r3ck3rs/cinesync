@@ -3,18 +3,18 @@
 @tailwind utilities;
 
 :root {
-  --bg: #080811;
-  --surface: #0e0e1b;
-  --elevated: #151524;
-  --overlay: #1b1b30;
-  --border: rgba(255, 255, 255, 0.06);
-  --border-md: rgba(255, 255, 255, 0.1);
-  --brand: #7c6ff7;
-  --brand-2: #ec4899;
-  --gold: #f5c518;
-  --text: #f0f0f8;
-  --muted: #68688a;
-  --subtle: #353552;
+  --bg: #000000;
+  --surface: #111111;
+  --elevated: #1a1a1a;
+  --overlay: #222222;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-md: rgba(255, 255, 255, 0.15);
+  --brand: #ffffff;
+  --brand-2: #ffffff;
+  --gold: #ffffff;
+  --text: #ffffff;
+  --muted: #888888;
+  --subtle: #333333;
 }
 
 *,
@@ -32,7 +32,7 @@ html {
 body {
   background-color: var(--bg);
   color: var(--text);
-  font-family: var(--font-body, system-ui, sans-serif);
+  font-family: var(--font-sans, system-ui, sans-serif);
   overscroll-behavior: none;
   min-height: 100dvh;
 }
@@ -60,7 +60,7 @@ input:-webkit-autofill:focus {
 
 @layer utilities {
   .font-display {
-    font-family: var(--font-display, Georgia, serif);
+    font-family: var(--font-sans, system-ui, sans-serif);
   }
 
   .text-muted {
@@ -84,7 +84,7 @@ input:-webkit-autofill:focus {
   }
 
   .glass {
-    background: rgba(21, 21, 36, 0.85);
+    background: rgba(17, 17, 17, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
   }

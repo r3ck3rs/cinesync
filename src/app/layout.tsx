@@ -1,19 +1,11 @@
 import type { Metadata } from "next";
-import { Fraunces, Sora } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-display",
-  weight: ["300", "400", "600", "700", "900"],
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const sora = Sora({
-  subsets: ["latin"],
-  variable: "--font-body",
-  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-sans",
+  weight: ["300", "400", "500", "600", "700", "900"],
   display: "swap",
 });
 
@@ -21,7 +13,7 @@ export const metadata: Metadata = {
   title: "CineSync",
   description: "Go to the movies together — spontaneously.",
   manifest: "/manifest.json",
-  themeColor: "#7c6ff7",
+  themeColor: "#000000",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -41,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="nl" className={`${fraunces.variable} ${sora.variable}`}>
+    <html lang="nl" className={inter.variable}>
       <body>{children}</body>
     </html>
   );
