@@ -42,12 +42,7 @@ export default function DayNav({ currentDay }: { currentDay: string }) {
         {isToday && (
           <span
             className="text-[10px] font-semibold uppercase tracking-widest"
-            style={{
-              background: 'linear-gradient(135deg, #7c6ff7, #ec4899)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
+            style={{ color: 'var(--text)' }}
           >
             Vandaag
           </span>
