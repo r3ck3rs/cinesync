@@ -43,10 +43,17 @@ describe('Avatar', () => {
     const div1 = c1.querySelector('div')
     const div2 = c2.querySelector('div')
 
-    const bgClass1 = Array.from(div1!.classList).find((c) => c.startsWith('bg-'))
-    const bgClass2 = Array.from(div2!.classList).find((c) => c.startsWith('bg-'))
+    const bgClass1 = Array.from(div1!.classList).find((c) => c.startsWith('bg-['))
+    const bgClass2 = Array.from(div2!.classList).find((c) => c.startsWith('bg-['))
 
     expect(bgClass1).toBeDefined()
     expect(bgClass1).toBe(bgClass2)
+  })
+
+  it('does not use any purple, violet, pink or colored Tailwind classes', () => {
+    const { container } = render(<Avatar userId="user-color-check" firstName="X" />)
+    const div = container.querySelector('div')
+    const classes = Array.from(div!.classList).join(' ')
+    expect(classes).not.toMatch(/violet|purple|pink|rose|emerald|teal|amber|orange|blue/)
   })
 })

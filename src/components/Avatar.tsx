@@ -1,15 +1,15 @@
 import Image from 'next/image'
 
-// Vibrant Trello-style color palette — bg-* classes required for tests
+// Monochrome palette — grayscale shades for black/white dark mode
 const COLOR_PALETTE = [
-  'bg-violet-500',
-  'bg-blue-500',
-  'bg-emerald-500',
-  'bg-orange-500',
-  'bg-pink-500',
-  'bg-teal-500',
-  'bg-rose-500',
-  'bg-amber-500',
+  'bg-[#2a2a2a]',
+  'bg-[#333333]',
+  'bg-[#3d3d3d]',
+  'bg-[#444444]',
+  'bg-[#2a2a2a]',
+  'bg-[#333333]',
+  'bg-[#3d3d3d]',
+  'bg-[#444444]',
 ]
 
 function hashUserId(userId: string): number {
@@ -61,7 +61,7 @@ export default function Avatar({ userId, firstName, lastName, avatarUrl, size = 
   return (
     <div
       className={`${sizeClasses} ${bgColor} rounded-full ring-2 ring-[var(--surface)] flex items-center justify-center font-bold text-white flex-shrink-0`}
-      style={{ boxShadow: '0 0 0 1px rgba(255,255,255,0.06)' }}
+      style={{ boxShadow: '0 0 0 1px rgba(255,255,255,0.1)' }}
     >
       {initials}
     </div>
