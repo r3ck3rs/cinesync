@@ -136,12 +136,7 @@ export default async function FeedPage({
           <div className="flex items-center justify-between mb-1">
             <span
               className="font-display font-black text-2xl tracking-tight"
-              style={{
-                background: "linear-gradient(135deg, #f0f0f8 0%, #9b8ef7 60%, #ec4899 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
+              style={{ color: "var(--text)" }}
             >
               🎬 CineSync
             </span>
